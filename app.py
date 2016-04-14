@@ -1,18 +1,21 @@
+import sys
+
 import tornado.ioloop
 import tornado.web
 
-
-class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.write("Hello, world")
+from poll_client import views
 
 
 def make_app():
     return tornado.web.Application([
-        (r"/", MainHandler),
+        (r"/", views.MainHandler),
     ])
 
 if __name__ == "__main__":
+    arg = sys.argv[1:]
+    ip, port = arg.split(':') if arg else 'localhost', '8000'
+
     app = make_app()
-    app.listen(8888, address='0.0.0.0')
+    app.listen(port, address=ip)
+
     tornado.ioloop.IOLoop.current().start()

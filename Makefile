@@ -1,2 +1,2 @@
 run:
-	python app.py
+	python app.py 0.0.0.0:8888
