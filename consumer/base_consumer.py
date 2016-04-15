@@ -2,7 +2,7 @@ import logging
 
 from pika import TornadoConnection, ConnectionParameters, PlainCredentials
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class BaseConsumerRabbitMQClient(object):
@@ -16,8 +16,7 @@ class BaseConsumerRabbitMQClient(object):
     Partially based on examples given in pika's library documentation.
     """
 
-    def __init__(self, username, password, host, port, exchange_name,
-                 exchange_type, queue_name, routing_key, io_loop):
+    def __init__(self, username, password, host, port, io_loop=None):
 
         credentials = PlainCredentials(username=username, password=password)
 
@@ -25,22 +24,42 @@ class BaseConsumerRabbitMQClient(object):
             host=host, port=port, credentials=credentials
         )
 
-        self._exchange_name = exchange_name
-        self._exchange_type = exchange_type
-        self._queue_name = queue_name
-        self._routing_key = routing_key
+        self._exchange_name = None
+        self._exchange_type = None
+        self._queue_name = None
+        self._routing_key = None
+        self._exclusive = False
         self._io_loop = io_loop
         self._connection = None
         self._channel = None
         self._closing = False
         self._consumer_tag = None
+        self._no_ack = False
 
-    def connect(self):
+    def connect(self, exchange_name, exchange_type, queue_name=None,
+                routing_key=None, exclusive=False, no_ack=False):
         """
-        This method connects to RabbitMQ, setting the _connection property.
+        This method connects to RabbitMQ and sets the connection properties.
         When the connection is established, the on_connection_open method
         will be invoked by pika.
+
+        :param exchange_name: a name of RabbitMQ's Exchange
+        :param exchange_type: a type of RabbitMQ's Exchange
+        :param queue_name: a name of the queue you want to connect to or None
+                           if you want let the server assign the name
+        :param routing_key: a routing key for bindind exchange and queue
+        :param exclusive: if True, a queue will be deleted after disconnecting.
+                          Usually applicable with dynamic name queues.
+        :param no_ack: if True, communication with RabbitMQ will be performed
+                       without ACK messages.
         """
+        self._exchange_name = exchange_name
+        self._exchange_type = exchange_type
+        self._queue_name = queue_name or ''
+        self._routing_key = routing_key
+        self._exclusive = exclusive
+        self._no_ack = no_ack
+
         logger.info('Connecting to Rabbit MQ server')
         self._connection = TornadoConnection(
             parameters=self._connection_parameters,
@@ -92,7 +111,10 @@ class BaseConsumerRabbitMQClient(object):
         """
         if not self._closing:
             # Create a new connection
-            self.connect()
+            self.connect(
+                self._exchange_name, self._exchange_type, self._queue_name,
+                self._routing_key, self._exclusive, self._no_ack
+            )
 
     def on_channel_close(self, channel, reply_code, reply_text):
         """
@@ -134,7 +156,7 @@ class BaseConsumerRabbitMQClient(object):
         :param str|unicode exchange_name: The name of the exchange to declare
 
         """
-        logger.info('Declaring exchange %s', exchange_name)
+        logger.info('Declaring exchange `%s`', exchange_name)
         self._channel.exchange_declare(self.on_exchange_declare_ok,
                                        exchange_name,
                                        self._exchange_type)
@@ -159,9 +181,10 @@ class BaseConsumerRabbitMQClient(object):
         :param str|unicode queue_name: The name of the queue to declare.
 
         """
-        logger.info('Declaring queue %s', queue_name)
-        self._channel.queue_declare(self.on_queue_declare_ok, queue_name)
-        # TODO: exclusive
+        logger.info('Declaring queue `%s`', queue_name)
+        self._channel.queue_declare(
+            self.on_queue_declare_ok, queue_name, exclusive=self._exclusive
+        )
 
     def on_queue_declare_ok(self, method_frame):
         """
@@ -174,7 +197,13 @@ class BaseConsumerRabbitMQClient(object):
         :param pika.frame.Method method_frame: The Queue.DeclareOk frame
 
         """
-        logger.info('Binding %s to %s with %s',
+        if not self._queue_name:
+            self._queue_name = method_frame.method.queue
+
+            logger.info('A queue name `%s` has been assigned by server',
+                        self._queue_name)
+
+        logger.info('Binding exchange `%s` to queue `%s` with routing `%s`',
                     self._exchange_name, self._queue_name, self._routing_key)
         self._channel.queue_bind(self.on_bind_ok, self._queue_name,
                                  self._exchange_name, self._routing_key)
@@ -219,9 +248,10 @@ class BaseConsumerRabbitMQClient(object):
         :param str|unicode body: The message body
 
         """
-        logger.info('Received message # %s from %s: %s',
-                    basic_deliver.delivery_tag, properties.app_id, body)
-        self.acknowledge_message(basic_deliver.delivery_tag)
+        logger.info('Received message #%s: %s',
+                    basic_deliver.delivery_tag, body)
+        if not self._no_ack:
+            self.acknowledge_message(basic_deliver.delivery_tag)
 
     def acknowledge_message(self, delivery_tag):
         """
@@ -269,8 +299,8 @@ class BaseConsumerRabbitMQClient(object):
         logger.info('Starting consuming')
         self._channel.add_on_cancel_callback(self.on_consumer_cancelled)
         self._consumer_tag = self._channel.basic_consume(self.on_message,
-                                                         self._queue_name)
-        # TODO: no_ack=True
+                                                         self._queue_name,
+                                                         no_ack=self._no_ack)
 
     def close_channel(self):
         """
