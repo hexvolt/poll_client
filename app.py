@@ -13,6 +13,7 @@ from consumer.poll_consumer import PollUpdatesConsumer
 def make_app():
     return tornado.web.Application([
         (r"/", views.MainHandler),
+        (r"/subscribe", views.SubscribePollChangesHandler),
     ], **settings.APP_SETTINGS)
 
 if __name__ == "__main__":

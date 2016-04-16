@@ -1,5 +1,3 @@
-import json
-
 import tornado.gen
 import tornadoredis
 
@@ -20,7 +18,7 @@ class PollUpdatesConsumer(BaseConsumerRabbitMQClient):
 
     def on_message(self, channel, basic_deliver, properties, body):
         """
-        Callback the fires each time the Rabbit queue gets the new message
+        Callback that fires each time the Rabbit queue gets the new message
         from the server.
 
         """
@@ -28,7 +26,27 @@ class PollUpdatesConsumer(BaseConsumerRabbitMQClient):
                                                     properties, body)
         message = body.decode('utf-8')
 
+        # Saving message to Redis. We don't actually need it for pushing
+        # to browser - so doing this just in order to accomplish one
+        # of the task bullets.
+        self.save_message(message)
+
         self.publish_message(message)
+
+    @tornado.gen.coroutine
+    def save_message(self, message):
+        """
+        Saves the Poll-message to the Redis storage.
+
+        :param str message: a string with JSON-encoded message received from
+                            RabbitMQ with information about Polls changes
+
+        """
+        redis_client = tornadoredis.Client()
+
+        yield tornado.gen.Task(
+            redis_client.lpush, 'poll:log', message
+        )
 
     @tornado.gen.coroutine
     def publish_message(self, message):
