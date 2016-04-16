@@ -13,7 +13,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         # getting latest changes from Redis
         poll_changes = yield tornado.gen.Task(
-            redis_client.lrange, 'poll:log', 0, 10
+            redis_client.lrange, 'poll:log', 0, -1
         )
 
         # fetching all polls as initial data for displaying

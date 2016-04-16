@@ -1,6 +1,8 @@
 .log {
     padding-left: 15px;
     font-size: 10px;
+    max-height: 900px;
+    overflow-y: scroll;
 }
 .log li {
     margin-bottom: 5px;
