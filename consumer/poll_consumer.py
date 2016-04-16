@@ -19,27 +19,28 @@ class PollUpdatesConsumer(BaseConsumerRabbitMQClient):
         )
 
     def on_message(self, channel, basic_deliver, properties, body):
+        """
+        Callback the fires each time the Rabbit queue gets the new message
+        from the server.
+
+        """
         super(PollUpdatesConsumer, self).on_message(channel, basic_deliver,
                                                     properties, body)
-        message = json.loads(body.decode('utf-8'))
+        message = body.decode('utf-8')
 
-        self.save_message(message)
+        self.publish_message(message)
 
     @tornado.gen.coroutine
-    def save_message(self, message):
+    def publish_message(self, message):
         """
-        Saves the Poll-message to the Redis storage.
+        Publishes the Poll-message to the Redis pub/sub channel.
 
-        :param dict message: a parsed message received from RabbitMQ with
-                             information about Poll-server's database changes
-                             {
-                                 'model': '...',
-                                 'action': '...',
-                                 'instance': {...}
-                             }
+        :param str message: a string with JSON-encoded message received from
+                            RabbitMQ with information about Polls changes
+
         """
-        redis_client = tornadoredis.Client()
+        redis_pub_client = tornadoredis.Client()
 
         yield tornado.gen.Task(
-            redis_client.lpush, 'poll:log', json.dumps(message)
+            redis_pub_client.publish, settings.REDIS_PUBSUB_CHANNEL, message
         )
