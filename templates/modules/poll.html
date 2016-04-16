@@ -3,6 +3,10 @@
         <h3 class="panel-title">{{ poll['question_text'] }}</h3>
     </div>
     <div class="panel-body">
-        Panel content
+        <ul class="choice">
+        {% for choice in poll['choices'] %}
+            <li>{{ choice['choice_text']}} - {{ choice['votes'] }}</li>
+        {% end %}
+        </ul>
     </div>
 </div>

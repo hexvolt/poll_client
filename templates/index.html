@@ -17,6 +17,7 @@
         <div class="row">
             <div class="col-md-8">
                 <h2>Polls Results</h2>
+                <p>Here are the current questions and voting results initially retrieved from the server through the REST API:</p>
                 {% for poll in polls %}
                     {% module Poll(poll) %}
                 {% end %}
