@@ -21,6 +21,7 @@ variables or to the setting.py file (see RABBITMQ_USER, RABBITMQ_PASSWORD, etc)
 * Set up and run Redis
 
 Follow [installation instructions](http://redis.io/download#installation)
+
 Run:
 
     src/redis-server
