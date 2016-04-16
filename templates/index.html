@@ -1,0 +1,45 @@
+{% extends base.html %}
+
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Polls Monitoring</h1>
+            <p>
+                This is a client application for the POLL SERVER app that allows you to monitor polls changes.
+                Technically the server publishes messages about any changes that happens with its models into Rabbit message queue. And this app consumes them, stores into Redis and provides fancy GUI for visualisation.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Example row of columns -->
+
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Polls Results</h2>
+                <p>Here are the current questions and voting results initially retrieved from the server through the REST API:</p>
+                {% for poll in polls %}
+                    {% module Poll(poll) %}
+                {% end %}
+            </div>
+
+            <div class="col-md-4">
+                <h2>Messages log</h2>
+                <p>Raw messages consumed from RabbitMQ.</p>
+
+                <ul class="log">
+                {% for poll_change in poll_changes %}
+                    <li>{{ poll_change }}</li>
+                {% end %}
+                </ul>
+            </div>
+        </div>
+
+        <hr>
+
+        <footer>
+            <p>© 2016 Ievgen Iermolenko</p>
+        </footer>
+    </div>
+
+{% end %}

@@ -1,11 +1,16 @@
 import os
 
+import poll_client.uimodules
+
 # RabbitMQ consumer settings
 RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
 RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT', 5672)
 RABBITMQ_USERNAME = os.environ.get('RABBITMQ_USERNAME', 'guest')
 RABBITMQ_PASSWORD = os.environ.get('RABBITMQ_PASSWORD', 'guest')
 RABBITMQ_APP_EXCHANGE = 'poll'
+
+# Poll Server location settings
+POLL_SERVER_URL = os.environ.get('POLL_SERVER_URL', 'http://0.0.0.0:8000')
 
 # Logging settings
 LOGGING = {
@@ -41,5 +46,7 @@ LOGGING = {
 
 # Tornado app settings
 APP_SETTINGS = {
-
+    'static_path': 'static/',
+    'template_path': 'templates/',
+    'ui_modules': poll_client.uimodules,
 }
