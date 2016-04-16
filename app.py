@@ -13,7 +13,7 @@ from consumer.rabbit_client import PollUpdatesConsumer
 def make_app():
     return tornado.web.Application([
         (r"/", views.MainHandler),
-    ])
+    ], **settings.APP_SETTINGS)
 
 if __name__ == "__main__":
     arg = sys.argv[1] if sys.argv[1:] else 'localhost:8000'

@@ -38,3 +38,8 @@ LOGGING = {
         }
     }
 }
+
+# Tornado app settings
+APP_SETTINGS = {
+
+}
