@@ -48,5 +48,5 @@ LOGGING = {
 APP_SETTINGS = {
     'static_path': 'static/',
     'template_path': 'templates/',
-
+    'ui_modules': poll_client.uimodules,
 }
