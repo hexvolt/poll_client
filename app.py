@@ -7,7 +7,7 @@ import tornado.web
 import settings
 
 from poll_client import views
-from consumer.rabbit_client import PollUpdatesConsumer
+from consumer.poll_consumer import PollUpdatesConsumer
 
 
 def make_app():
