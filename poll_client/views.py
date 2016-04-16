@@ -13,4 +13,4 @@ class MainHandler(tornado.web.RequestHandler):
             redis_client.lrange, 'poll:log', 0, 10
         )
 
-        self.render('templates/index.html', poll_changes=poll_changes)
+        self.render('index.html', poll_changes=poll_changes)

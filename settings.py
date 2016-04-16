@@ -41,5 +41,6 @@ LOGGING = {
 
 # Tornado app settings
 APP_SETTINGS = {
-
+    'template_path': 'templates/',
+    'static_path': 'static/',
 }
