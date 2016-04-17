@@ -12,6 +12,9 @@ RABBITMQ_APP_EXCHANGE = 'poll'
 # Poll Server location settings
 POLL_SERVER_URL = os.environ.get('POLL_SERVER_URL', 'http://0.0.0.0:8000')
 
+# Redis settings
+REDIS_PUBSUB_CHANNEL = 'poll_updates_channel'
+
 # Logging settings
 LOGGING = {
     'version': 1,
