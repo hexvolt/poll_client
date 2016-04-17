@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
-    function updateChoice(id, instance) {
-        var $choice = $("#choice_" + id),
+    function updateChoice(instance) {
+        var $choice = $("#choice_" + instance.id),
             $choiceText = $choice.find(".choice-text"),
             $choiceVotes = $choice.find(".votes");
 
@@ -9,8 +9,8 @@ $(document).ready(function() {
         $choiceVotes.text(instance.votes);
     }
 
-    function updateQuestion(id, instance) {
-        var $question = $("#question_" + id),
+    function updateQuestion(instance) {
+        var $question = $("#question_" + instance.id),
             $questionText = $question.find(".question-text");
 
         $questionText.text(instance.question_text);
@@ -47,19 +47,24 @@ $(document).ready(function() {
         $("#choice_" + instance.id).remove();
     }
 
+    function logMessage(message) {
+        $(".log").append("<li>" + message + "</li>");
+    }
+
     function messageProcess(message){
         var msgJSON = $.parseJSON(message),
             action = msgJSON.action.toLowerCase(),
             model = msgJSON.model.toLowerCase(),
-            instance = msgJSON.instance,
-            instanceID = instance.id;
+            instance = msgJSON.instance;
+
+        logMessage(message);
 
         if ((model === "choice") && (action === "updated")) {
-            updateChoice(instanceID, instance);
+            updateChoice(instance);
         } else
 
         if ((model === "question") && (action === "updated")) {
-            updateQuestion(instanceID, instance);
+            updateQuestion(instance);
         } else
 
         if ((model === "question") && (action === "created")) {
@@ -77,8 +82,6 @@ $(document).ready(function() {
         if ((model === "choice") && (action === "deleted")) {
             delChoice(instance);
         }
-
-        console.log(message)
     }
 
     function websocketSubscribePollChanges(){
