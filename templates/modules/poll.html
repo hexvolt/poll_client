@@ -1,12 +1,26 @@
-<div class="panel panel-info">
-    <div class="panel-heading">
-        <h3 class="panel-title">{{ poll['question_text'] }}</h3>
+{% if poll %}
+    <div class="panel panel-info question" id="question_{{ poll['id'] }}">
+        <div class="panel-heading">
+            <h3 class="panel-title question-text">{{ poll['question_text'] }}</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="choices">
+            {% for choice in poll['choices'] %}
+                {% module ChoiceUIModule(choice) %}
+            {% end %}
+            </ul>
+        </div>
     </div>
-    <div class="panel-body">
-        <ul class="choice">
-        {% for choice in poll['choices'] %}
-            <li>{{ choice['choice_text']}} - {{ choice['votes'] }}</li>
-        {% end %}
-        </ul>
+
+{% else %}
+    <div class="panel panel-info question question_empty">
+        <div class="panel-heading">
+            <h3 class="panel-title question-text"></h3>
+        </div>
+        <div class="panel-body">
+            <ul class="choices">
+
+            </ul>
+        </div>
     </div>
-</div>
+{% end %}

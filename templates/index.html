@@ -12,15 +12,26 @@
     </div>
 
     <div class="container">
-        <!-- Example row of columns -->
 
         <div class="row">
             <div class="col-md-8">
                 <h2>Polls Results</h2>
-                <p>Here are the current questions and voting results initially retrieved from the server through the REST API:</p>
-                {% for poll in polls %}
-                    {% module Poll(poll) %}
-                {% end %}
+                <p>
+                    Here are the current questions and voting results initially retrieved from the server through the REST API.
+                    When some changes happens on the server, these questions/choices will be dynamically updated without page reloading.
+                </p>
+
+                <div class="questions-container">
+                    {% for poll in polls %}
+                        {% module PollUIModule(poll) %}
+                    {% end %}
+                </div>
+
+                <div class="hidden">
+                    {% module PollUIModule() %}
+
+                    {% module ChoiceUIModule() %}
+                </div>
             </div>
 
             <div class="col-md-4">
@@ -28,9 +39,6 @@
                 <p>Raw messages consumed from RabbitMQ.</p>
 
                 <ul class="log">
-                {% for poll_change in poll_changes %}
-                    <li>{{ poll_change }}</li>
-                {% end %}
                 </ul>
             </div>
         </div>
@@ -42,4 +50,8 @@
         </footer>
     </div>
 
+{% end %}
+
+{% block js %}
+    <script src="/static/js/main.js"></script>
 {% end %}
