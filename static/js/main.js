@@ -22,6 +22,7 @@ $(document).ready(function() {
             $newQuestion = $emptyQuestion.clone();
 
         $newQuestion.attr("id", "question_" + instance.id)
+                    .removeClass("question_empty")
                     .find(".question-text").text(instance.question_text);
         $newQuestion.prependTo($questions);
     }
@@ -32,6 +33,7 @@ $(document).ready(function() {
             $newChoice = $emptyChoice.clone();
 
         $newChoice.attr("id", "choice_" + instance.id)
+                  .removeClass("choice_empty")
                   .find(".choice-text").text(instance.choice_text);
         $newChoice.find(".votes").text(instance.votes);
         $newChoice.appendTo($choices);
