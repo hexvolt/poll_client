@@ -1,8 +1,10 @@
 import tornado.web
 
 
-class Poll(tornado.web.UIModule):
+class PollUIModule(tornado.web.UIModule):
 
-    def render(self, poll):
+    template = 'modules/poll.html'
 
-        return self.render_string('modules/poll.html', poll=poll)
+    def render(self, poll=None):
+
+        return self.render_string(self.template, poll=poll)

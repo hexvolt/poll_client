@@ -4,6 +4,7 @@ import tornado.websocket
 import tornadoredis
 
 import settings
+
 from poll_client.services import fetch_polls
 
 
@@ -13,15 +14,10 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         redis_client = tornadoredis.Client()
 
-        # getting latest changes from Redis
-        poll_changes = yield tornado.gen.Task(
-            redis_client.lrange, 'poll:log', 0, -1
-        )
-
         # fetching all polls as initial data for displaying
         polls = yield tornado.gen.Task(fetch_polls)
 
-        self.render('index.html', polls=polls, poll_changes=poll_changes)
+        self.render('index.html', polls=polls)
 
 
 class SubscribePollChangesHandler(tornado.websocket.WebSocketHandler):
@@ -47,6 +43,7 @@ class SubscribePollChangesHandler(tornado.websocket.WebSocketHandler):
         self.redis_sub_client.listen(self.on_redis_message)
 
     def on_redis_message(self, message):
+
         if message.kind == 'message':
             self.write_message(str(message.body))
 

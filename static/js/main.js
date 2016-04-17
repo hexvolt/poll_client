@@ -16,6 +16,15 @@ $(document).ready(function() {
         $questionText.text(instance.question_text);
     }
 
+    function addQuestion(instance) {
+        var $emptyQuestion = $(".question_empty"),
+            $newQuestion = $emptyQuestion.clone();
+
+        $newQuestion.attr("id", "question_" + instance.id)
+                    .find(".question-text").text(instance.question_text);
+        $newQuestion.prependTo(".questions-container");
+    }
+
     function messageProcess(message){
         var msgJSON = $.parseJSON(message),
             action = msgJSON.action.toLowerCase(),
@@ -25,8 +34,14 @@ $(document).ready(function() {
 
         if ((model === "choice") && (action === "updated")) {
             updateChoice(instanceID, instance);
-        } else if ((model === "question") && (action === "updated")) {
+        } else
+
+        if ((model === "question") && (action === "updated")) {
             updateQuestion(instanceID, instance);
+        } else
+
+        if ((model === "question") && (action === "created")) {
+            addQuestion(instance);
         }
 
         console.log(message)
