@@ -39,6 +39,14 @@ $(document).ready(function() {
         $newChoice.appendTo($choices);
     }
 
+    function delQuestion(instance) {
+        $("#question_" + instance.id).remove();
+    }
+
+    function delChoice(instance) {
+        $("#choice_" + instance.id).remove();
+    }
+
     function messageProcess(message){
         var msgJSON = $.parseJSON(message),
             action = msgJSON.action.toLowerCase(),
@@ -60,6 +68,14 @@ $(document).ready(function() {
 
         if ((model === "choice") && (action === "created")) {
             addChoice(instance);
+        } else
+
+        if ((model === "question") && (action === "deleted")) {
+            delQuestion(instance);
+        } else
+
+        if ((model === "choice") && (action === "deleted")) {
+            delChoice(instance);
         }
 
         console.log(message)
