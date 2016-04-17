@@ -1,0 +1,9 @@
+{% if choice %}
+    <li class="choice" id="choice_{{ choice['id'] }}">
+        <span class="choice-text">{{ choice['choice_text'] }}</span> - <span class="votes">{{ choice['votes'] }}</span>
+    </li>
+{% else %}
+    <li class="choice choice_empty">
+        <span class="choice-text"></span> - <span class="votes"></span>
+    </li>
+{% end %}

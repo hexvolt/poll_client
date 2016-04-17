@@ -6,9 +6,7 @@
         <div class="panel-body">
             <ul class="choices">
             {% for choice in poll['choices'] %}
-                <li class="choice" id="choice_{{ choice['id'] }}">
-                    <span class="choice-text">{{ choice['choice_text'] }}</span> - <span class="votes">{{ choice['votes'] }}</span>
-                </li>
+                {% module ChoiceUIModule(choice) %}
             {% end %}
             </ul>
         </div>

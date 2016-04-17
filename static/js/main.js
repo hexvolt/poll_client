@@ -17,12 +17,24 @@ $(document).ready(function() {
     }
 
     function addQuestion(instance) {
-        var $emptyQuestion = $(".question_empty"),
+        var $questions = $(".questions-container"),
+            $emptyQuestion = $(".question_empty"),
             $newQuestion = $emptyQuestion.clone();
 
         $newQuestion.attr("id", "question_" + instance.id)
                     .find(".question-text").text(instance.question_text);
-        $newQuestion.prependTo(".questions-container");
+        $newQuestion.prependTo($questions);
+    }
+
+    function addChoice(instance) {
+        var $choices = $("#question_" + instance.question).find(".choices"),
+            $emptyChoice = $(".choice_empty"),
+            $newChoice = $emptyChoice.clone();
+
+        $newChoice.attr("id", "choice_" + instance.id)
+                  .find(".choice-text").text(instance.choice_text);
+        $newChoice.find(".votes").text(instance.votes);
+        $newChoice.appendTo($choices);
     }
 
     function messageProcess(message){
@@ -42,6 +54,10 @@ $(document).ready(function() {
 
         if ((model === "question") && (action === "created")) {
             addQuestion(instance);
+        } else
+
+        if ((model === "choice") && (action === "created")) {
+            addChoice(instance);
         }
 
         console.log(message)
