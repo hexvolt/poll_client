@@ -7,6 +7,15 @@ import settings
 
 class PollUpdatesConsumer(BaseConsumerRabbitMQClient):
 
+    exchange_name = settings.RABBITMQ_APP_EXCHANGE
+    exchange_type = 'fanout'
+
+    queue_name = ''
+    routing_key = ''
+
+    exclusive = True
+    no_ack = True
+
     def __init__(self):
 
         super(PollUpdatesConsumer, self).__init__(

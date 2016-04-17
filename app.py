@@ -23,12 +23,7 @@ if __name__ == "__main__":
     logging.config.dictConfig(settings.LOGGING)
 
     poll_consumer = PollUpdatesConsumer()
-    poll_consumer.connect(
-        exchange_name=settings.RABBITMQ_APP_EXCHANGE,
-        exchange_type='fanout',
-        exclusive=True,
-        no_ack=True
-    )
+    poll_consumer.connect()
 
     app = make_app()
     app.listen(address=ip, port=port)
