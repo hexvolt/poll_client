@@ -1,11 +1,13 @@
-<div class="panel panel-info">
+<div class="panel panel-info question" id="question_{{ poll['id'] }}">
     <div class="panel-heading">
-        <h3 class="panel-title">{{ poll['question_text'] }}</h3>
+        <h3 class="panel-title question-text">{{ poll['question_text'] }}</h3>
     </div>
     <div class="panel-body">
-        <ul class="choice">
+        <ul class="choices">
         {% for choice in poll['choices'] %}
-            <li>{{ choice['choice_text']}} - {{ choice['votes'] }}</li>
+            <li class="choice" id="choice_{{ choice['id'] }}">
+                <span class="choice-text">{{ choice['choice_text'] }}</span> - <span class="votes">{{ choice['votes'] }}</span>
+            </li>
         {% end %}
         </ul>
     </div>
